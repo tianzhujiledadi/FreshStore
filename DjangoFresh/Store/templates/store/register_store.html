@@ -1,0 +1,30 @@
+{% extends "store/base.html" %}
+{% block content %}
+    <form method="post" action="/store/register_store/">
+                  {% csrf_token %}
+      <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="store_name" placeholder="店铺名称">
+                </div>
+    <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="store_address" placeholder="店铺地址">
+                </div>
+    <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="store_descrition" placeholder="店铺描述">
+                </div>
+    <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="store_logo" placeholder="店铺logo">
+                </div>
+    <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="store_phone" placeholder="店铺电话">
+                </div>
+    <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="store_money" placeholder="店铺注册资金">
+                </div>
+    <div class="form-group ">
+                  <input class="form-control form-control-user" type="text"  name="type" placeholder="店铺类型">
+                </div>
+    <div class="form-group ">
+                  <input class="btn  btn-primary btn-block" type="submit"  value="注册">
+                </div>
+
+{% endblock %}
