@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Store.apps.StoreConfig',
+    'ckeditor',#富文本配置，django自带
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -119,11 +121,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS=(
-#     os.path.join(BASE_DIR,"static"),
-# )
-# MEDIA_URL="/media/"#长传文件
-# MEDIA_ROOT=os.path.join(BASE_DIR,"static")
-STATIC_ROOT=os.path.join(BASE_DIR,"static")#收集静态文件
+STATICFILES_DIRS=(
+    os.path.join(BASE_DIR,"static"),
+)
+MEDIA_URL="/media/"#长传文件
+MEDIA_ROOT=os.path.join(BASE_DIR,"static")
+#STATIC_ROOT=os.path.join(BASE_DIR,"static")#收集静态文件
+
+CKEDITOR_UPLOAD_PATH='static/upload'
+CKEDITOR_IMAGE_BACKEND="pillow"#富文本配置
+#配置完富文本后要收集静态文件，然后在前端引用，然后运行
 
 

@@ -20,5 +20,6 @@ from Store.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('store/',include('Store.urls')),
-
+    path('ckeditor/',include('ckeditor_uploader.urls'))
+    #ckeditor类似于一个小APP
 ]

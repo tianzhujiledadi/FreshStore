@@ -17,7 +17,7 @@ class StoreType(models.Model):
 class Store(models.Model):
     store_name = models.CharField(max_length=32, verbose_name="店铺名称")
     store_address = models.CharField(max_length=32,verbose_name="店铺地址")
-    store_descripton = models.TextField(verbose_name="店铺描述")
+    store_description = models.TextField(verbose_name="店铺描述")
     store_logo = models.ImageField(upload_to="store/images",verbose_name="店铺logo")
     store_phone = models.CharField(max_length=32,verbose_name="店铺电话")
     store_money = models.FloatField(verbose_name="店铺注册资金")
@@ -28,6 +28,7 @@ class Goods(models.Model):
     goods_name = models.CharField(max_length=32,verbose_name="商品名称")
     goods_price = models.FloatField(verbose_name="商品价格")
     goods_image = models.ImageField(upload_to="store/images", verbose_name="商品图片")
+    #update_to=store/images必须指向相对路径
     goods_number = models.IntegerField(verbose_name="商品数量库存")
     goods_description = models.TextField(verbose_name="商品描述")
     goods_date = models.DateField(verbose_name="出厂日期")
