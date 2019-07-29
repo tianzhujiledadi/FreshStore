@@ -1,7 +1,9 @@
 {% extends "store/base.html" %}
-
+{% block title %}
+店铺注册
+{% endblock %}
 {% block content %}
-        <form action="post" action="/store/register_store/" enctype="multipart/form-data"></form>
+        <form method="post"  enctype="multipart/form-data">
                   {% csrf_token %}
       <div class="form-group ">
                   <input class="form-control form-control-user" type="text"  name="store_name" placeholder="店铺名称">
@@ -32,13 +34,5 @@
                   <input class="btn  btn-primary btn-block" type="submit"  value="注册">
                 </div>
     </form>
-    <div class="form-group">
-    <select name="type"  class="form-control  form-control-user"  multiple="multiple">
-         {% for t in  type_list %}
-         op
-         {% endfor %}
-
-    </select>
-    </div>
 {% endblock %}
 

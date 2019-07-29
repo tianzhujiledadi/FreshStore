@@ -1,0 +1,82 @@
+{% extends "buyer/base.html" %}
+{% block title %}
+欢迎来到天天海鲜店
+{% endblock %}
+{% block style %}
+<script type="text/javascript" src="/static/buyer/js/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="/static/buyer/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/static/buyer/js/slide.js"></script>
+{% endblock %}
+{% block content %}
+	<div class="center_con clearfix">
+		<ul class="subnav fl">
+            {% for goodslist in goodstypelist  %}
+			<li><a href="/buyer/goods_list/?type_id={{ goodslist.id }}" class="fruit">{{ goodslist.name }}</a></li>
+            {% endfor %}
+		</ul>
+		<div class="slide fl">
+		<ul class="slide_pics">
+            {% for goodslist in goodstypelist  %}
+				<li><img src="/static/{{ goodslist.picture }}" alt="幻灯片"></li>
+			{% endfor %}
+			</ul>
+			<div class="prev"></div>
+			<div class="next"></div>
+			<ul class="points"></ul>
+		</div>
+		<div class="adv fl">
+			<a href="/static/buyer/#"><img src="/static/buyer/images/adv01.jpg"></a>
+			<a href="/static/buyer/#"><img src="/static/buyer/images/adv02.jpg"></a>
+		</div>
+	</div>
+    {% for goodstype in result_list %}
+
+
+	<div class="list_model">
+		<div class="list_title clearfix">
+			<h3 class="fl" id="model01">{{ goodstype.name }}</h3>
+			<div class="subtitle fl">
+
+				<span>|</span>
+        {% for goods in goodstype.goodlist %}
+				<a href="/buyer/detail/?goods_id={{ goods.id }}&type_id={{ goodstype.id }}">{{ goods.goods_name }}</a>
+				{% endfor %}
+			</div>
+			<a href="/buyer/goods_list/?type_id={{ goodstype.id }}"  class="goods_more fr" id="fruit_more">查看更多 ></a>
+		</div>
+
+		<div class="goods_con clearfix">
+			<div class="goods_banner fl"><img src="/static/buyer/images/banner01.jpg"></div>
+			<ul class="goods_list fl">
+                {% for goods in goodstype.goodlist %}
+
+				<li>
+					<h4><a href="/buyer/detail/?goods_id={{ goods.id }}&type_id={{ goodstype.id }}">{{ goods.goods_name }}</a></h4>
+					<a href="/buyer/detail/?goods_id={{ goods.id }}&type_id={{ goodstype.id }}"><img src="/static/{{ goods.goods_image }}"></a>
+					<div class="prize">{{ goods.goods_price }}</div>
+				</li>
+                {% endfor %}
+			</ul>
+		</div>
+	</div>
+       {% endfor %}
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/static/buyer/js/slideshow.js"></script>
+	<script type="text/javascript">
+		BCSlideshow('focuspic');
+		var oFruit = document.getElementById('fruit_more');
+		var oShownum = document.getElementById('show_count');
+
+		var hasorder = localStorage.getItem('order_finish');
+
+		if(hasorder)
+		{
+			oShownum.innerHTML = '2';
+		}
+
+		oFruit.onclick = function(){
+			window.location.href = 'goods_list.html';
+		}
+	</script>
+{% endblock %}
