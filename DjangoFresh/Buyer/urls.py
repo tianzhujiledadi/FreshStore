@@ -30,4 +30,8 @@ urlpatterns = [
     path('place_order/',place_order),#订单列表
     path('cart/',cart),
     path('add_cart/',add_cart),
+    path('testgoods/',TestGoods),#批量添加商品
+    path('goodsexit/',goodsexit),#批量修改商品
+
+
 ]

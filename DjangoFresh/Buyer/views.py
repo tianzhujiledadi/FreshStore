@@ -4,6 +4,7 @@ from django.shortcuts import HttpResponse
 from  Buyer.models import *
 from  Store.views import setpw
 from  Store.models import *
+from django.db.models import Sum
 # Create your views here.
 def  loginValid(fun):
     def  inner(request,*args,**kwargs):
@@ -148,14 +149,17 @@ def  cart(request):#购物车页面
     if request.method=="POST":#cart页提交订单
         post_data=request.POST
         cart_data=[]#收集前端传递过来的商品
+        cart_ids=[]
         for k,v in post_data.items():
             if k.startswith("goods_"):#判断传过来的订单id
                 print(v,"v",k,"k")
                 cart_data.append(Cart.objects.get(id=int(v)))
+                cart_ids.append(int(v))
         goods_count=sum([int(i.goods_number) for i in cart_data])#提交过来的数据总的数量
-        goods_total=sum([int(i.goods_total) for i in cart_data])#订单的总价
+        #goods_total=sum([int(i.goods_total) for i in cart_data])#订单的总价
+        goods_total=Cart.objects.filter(id__in=cart_ids).aggregate(Sum("goods_total"))#得到一个字典
+        goods_total=goods_total["goods_total__sum"]
         #goods_store=([str(i.goods_store) for i in cart_data])
-
         #保存订单
         order=Order()
         order.order_id=setOrderId(str(user_id),str(goods_count),"2")
@@ -251,8 +255,88 @@ def  pay_result(request):
     # seller_id=###商家id
     # timestamp=2019-07-26#时间
     return  render(request,"buyer/pay_result.html",locals())
-
-
+import  datetime
+def TestGoods(request):#添加商品
+    goods_type=GoodsType.objects.all()
+    sg = "杏、樱桃、桃、水蜜桃、油桃、黑莓、覆盆子、云莓、罗甘莓、白里叶莓、橘子、砂糖桔、橙子、柠檬、青柠、柚子、金桔、葡萄柚、香橼、佛手、指橙、黄皮果、蟠桃、李子、梅子、青梅、西梅、白玉樱桃"
+    znyr = "猪肉、猪腿、大肠、羊肉、羊蹄、羊头、羊杂、牛板筋、牛肉、牛排"
+    hxsc = "巴沙鱼、虾仁、三文鱼、长尾鳕、白虾、北极甜虾、大黄鱼、海鳝鱼、美国红黑虎虾"
+    qldl = "乌骨鸡、绿壳蛋乌鸡、榛鸡、黑凤鸡、白来航鸡、安得纽夏鸡、黑米诺卡鸡、洛岛红鸡、黑狼山鸡、新汗夏、芦花鸡、浅花苏塞克斯、澳洲黑、九斤黄鸡、七彩山鸡"
+    store=Store.objects.get(id=15)#获取店铺等于15
+    # for  f in  znyr.split("、"):
+    #     goods=Goods()
+    #     goods.goods_name=f
+    #     goods.goods_price=9000.00
+    #     goods.goods_image="buyer/images/banner01.jpg"
+    #     goods.goods_number=60
+    #     goods.goods_description=f
+    #     goods.goods_date=datetime.datetime.now()
+    #     goods.goods_safeDate=1
+    #     goods.goods_under=1
+    #     goods.goods_type=goods_type[3]
+    #     goods.store_id=store
+    #     goods.save()
+    # for z in sg.split("、"):
+    #     goods = Goods()
+    #     goods.goods_name = z
+    #     goods.goods_price = 6000.00
+    #     goods.goods_image = "buyer/images/banner03.jpg"
+    #     goods.goods_number = 60
+    #     goods.goods_description = z
+    #     goods.goods_date = datetime.datetime.now()
+    #     goods.goods_safeDate = 1
+    #     goods.goods_under = 1
+    #     goods.goods_type = goods_type[0]
+    #     goods.store_id = store
+    #     goods.save()
+    # for h in hxsc.split("、"):
+    #     goods = Goods()
+    #     goods.goods_name = h
+    #     goods.goods_price = 18000.00
+    #     goods.goods_image = "buyer/images/banner02.jpg"
+    #     goods.goods_number = 60
+    #     goods.goods_description = h
+    #     goods.goods_date = datetime.datetime.now()
+    #     goods.goods_safeDate = 1
+    #     goods.goods_under = 1
+    #     goods.goods_type = goods_type[1]
+    #     goods.store_id = store
+    #     goods.save()
+    for q in qldl.split("、"):
+        goods = Goods()
+        goods.goods_name = q
+        goods.goods_price = 12000.00
+        goods.goods_image = "buyer/images/banner04.jpg"
+        goods.goods_number = 60
+        goods.goods_description = q
+        goods.goods_date = datetime.datetime.now()
+        goods.goods_safeDate = 1
+        goods.goods_under = 1
+        goods.goods_type = goods_type[6]
+        goods.store_id = store
+        goods.save()
+    return HttpResponse("商品添加成功")
+def goodsexit(request):
+    goods = Goods.objects.order_by("id")
+    for i in range(len(goods)):
+        goods[i].id=i
+    # goods = Goods.objects.filter(goods_image="buyer/banner01.jpg")
+    # for good in goods:
+    #     good.goods_image="buyer/images/banner01.jpg"
+    #     good.save()
+    # goods = Goods.objects.filter(goods_image="buyer/banner03.jpg")
+    # for good in goods:
+    #     good.goods_image="buyer/images/banner03.jpg"
+    #     good.save()
+    # goods = Goods.objects.filter(goods_image="buyer/banner02.jpg")
+    # for good in goods:
+    #     good.goods_image="buyer/images/banner02.jpg"
+    #     good.save()
+    # goods = Goods.objects.filter(goods_image="buyer/banner04.jpg")
+    # for good in goods:
+    #     good.goods_image="buyer/images/banner04.jpg"
+    #     good.save()
+    return HttpResponseRedirect('/buyer/index/')
 
 
 

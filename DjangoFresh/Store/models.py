@@ -24,21 +24,26 @@ class Store(models.Model):
     user_id = models.IntegerField(verbose_name="店铺主人")#通过cookie获取用户名
     type = models.ManyToManyField(to=StoreType,verbose_name="店铺类型")
 
-# import datetime
-# class GoodsTypeManage(Manager):#可以被多个类调用
-#     def addType(self,name,picture="buyer/images/page_1_10.jpg"):
-#         goods_type=GoodsType()
-#         goods_type.name=name
-#         now=datetime.datetime.now().strftime("%Y-%m-%d")
-#         goods_type.description="%s_%s"(now,name)
-#         goods_type.picture=picture
-#         goods_type.save()
-#         return goods_type
+import datetime
+class GoodsTypeManage(Manager):
+    def addType(self,name,picture = "buyer/images/page_1_10.jpg"):
+        goods_type = GoodsType()
+        goods_type.name = name
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        goods_type.description = "%s_%s"%(now,name)
+        goods_type.picture = picture
+        goods_type.save()
+        return goods_type
 class  GoodsType(models.Model):
     name = models.CharField(max_length=32, verbose_name="商品类型名称")
     description = models.CharField(max_length=32, verbose_name="商品类型描述")
     picture=models.ImageField(upload_to="buyer/images")#没有目录会自动创建
-    # object=GoodsTypeManage()#
+    objects=GoodsTypeManage()#修改goodtype的object属性
+
+class GoodsManage(Manager):
+    def up_goods(self):
+        """全部上架的商品 return"""
+        return Goods.objects.filter(goods_under=1)
 class Goods(models.Model):
     goods_name = models.CharField(max_length=32,verbose_name="商品名称")
     goods_price = models.FloatField(verbose_name="商品价格")
@@ -52,6 +57,10 @@ class Goods(models.Model):
     goods_under=models.IntegerField(verbose_name="商品状态",default=1)#0下架，1上架代收
     goods_type = models.ForeignKey(to=GoodsType, on_delete=models.CASCADE, verbose_name="商品类型")
     store_id=models.ForeignKey(to=Store,on_delete=models.CASCADE,verbose_name="商品店铺")
+
+    object=GoodsManage()
+    def __str__(self):
+        return self.goods_name
 class GoodsImg(models.Model):
     img_address = models.ImageField(upload_to="store/images",verbose_name="图片地址")
     img_description = models.TextField(max_length=32, verbose_name="图片描述")
