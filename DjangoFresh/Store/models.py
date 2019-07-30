@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.db.models import Manager
 class Seller(models.Model):
     username = models.CharField(max_length=32,verbose_name="用户名")
     password = models.CharField(max_length=32, verbose_name="密码")
@@ -24,10 +24,21 @@ class Store(models.Model):
     user_id = models.IntegerField(verbose_name="店铺主人")#通过cookie获取用户名
     type = models.ManyToManyField(to=StoreType,verbose_name="店铺类型")
 
+# import datetime
+# class GoodsTypeManage(Manager):#可以被多个类调用
+#     def addType(self,name,picture="buyer/images/page_1_10.jpg"):
+#         goods_type=GoodsType()
+#         goods_type.name=name
+#         now=datetime.datetime.now().strftime("%Y-%m-%d")
+#         goods_type.description="%s_%s"(now,name)
+#         goods_type.picture=picture
+#         goods_type.save()
+#         return goods_type
 class  GoodsType(models.Model):
     name = models.CharField(max_length=32, verbose_name="商品类型名称")
     description = models.CharField(max_length=32, verbose_name="商品类型描述")
     picture=models.ImageField(upload_to="buyer/images")#没有目录会自动创建
+    # object=GoodsTypeManage()#
 class Goods(models.Model):
     goods_name = models.CharField(max_length=32,verbose_name="商品名称")
     goods_price = models.FloatField(verbose_name="商品价格")

@@ -3,17 +3,6 @@
 生鲜店购物车
 {% endblock %}
 {% block content %}
-
-{% endblock %}
-	<div class="search_bar clearfix">
-		<a href="index.html" class="logo fl"><img src="images/logo.png"></a>
-		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;购物车</div>
-		<div class="search_con fr">
-			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
-			<input type="button" class="input_btn fr" name="" value="搜索">
-		</div>		
-	</div>
-
 	<div class="total_count">全部商品<em>2</em>件</div>	
 	<ul class="cart_list_th clearfix">
 		<li class="col01">商品名称</li>
@@ -23,47 +12,59 @@
 		<li class="col05">小计</li>
 		<li class="col06">操作</li>
 	</ul>
-{% for good in goodslist %}
+    <form method="post">
+    {% csrf_token %}
+{% for goods in goods_list %}
 
 	<ul class="cart_list_td clearfix">
-		<li class="col01"><input type="checkbox" name="" checked></li>
-		<li class="col02"><img src="{{ good.goods_image }}"></li>
+		<li class="col01"><input type="checkbox" class="goods_check" checked
+        value="{{ goods.id }}"  name="goods_{{ goods.id }}"></li>
+		<li class="col02"><img src="/static/{{ goods.goods_picture }}"></li>
 		<li class="col03">{{ goods.goods_name }}<br><em>{{ goods.goods_price }}元/500g</em></li>
 		<li class="col04">500g</li>
 		<li class="col05">{{ goods.goods_price }}元</li>
 		<li class="col06">
 			<div class="num_add">
 				<a href="javascript:;" class="add fl">+</a>
-				<input type="text" class="num_show fl" value="{{ count }}">
-				<a href="javascript:;" class="minus fl">-</a>	
+				<input type="text" class="num_show fl" value="{{ goods.goods_number }}">
+				<a href="javascript:;" class="minus fl">-</a>
 			</div>
 		</li>
-		<li class="col07">{{ goods.goods_price }}元</li>
+		<li class="col07">{{ goods.goods_total }}元</li>
 		<li class="col08"><a href="javascript:;">删除</a></li>
 	</ul>
 {% endfor %}
-	
-
 	<ul class="settlements">
-		<li class="col01"><input type="checkbox" name="" checked=""></li>
+		<li class="col01"><input type="checkbox" id="allBox" name="" checked=""></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
-		<li class="col04"><a href="place_order.html">去结算</a></li>
+		<li class="col04"><input type="submit" value="去结算"></li>
 	</ul>
+    </form>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/static/buyer/js/jquery-1.12.4.min.js"></script>
+    <script>
+      $("#allBox").click(//点击全选
+          function () {
+              if (this.checked){
+                 $(".goods_check").prop("checked",true)
+              }else{
+                  $(".goods_check").prop("checked",false)
+              }
+          }
+      );
+      $(".goods_check").each(
+          function () {
+              $(this).click(
+                  function () {
+                      if(!this.checked){
+                          $("#allBox").prop("checked",false)
+                      }
+                  }
+              )
+          }
+      )
+    </script>
+{% endblock %}
 
-	<div class="footer">
-		<div class="foot_link">
-			<a href="#">关于我们</a>
-			<span>|</span>
-			<a href="#">联系我们</a>
-			<span>|</span>
-			<a href="#">招聘人才</a>
-			<span>|</span>
-			<a href="#">友情链接</a>		
-		</div>
-		<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>
-		<p>电话：010-****888    京ICP备*******8号</p>
-	</div>
-	
-</body>
-</html>

@@ -29,4 +29,5 @@ urlpatterns = [
     path('detail/',detail),
     path('place_order/',place_order),#订单列表
     path('cart/',cart),
+    path('add_cart/',add_cart),
 ]

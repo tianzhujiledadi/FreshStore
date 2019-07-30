@@ -1,4 +1,5 @@
 from django.db import models
+
 class Buyer(models.Model):
     username=models.CharField(max_length=32,verbose_name="用户名")
     password=models.CharField(max_length=32,verbose_name="密码")
@@ -32,5 +33,14 @@ class OrderDetail(models.Model):#订单详情表
     goods_total = models.FloatField(verbose_name="商品总价")
     goods_store = models.IntegerField(verbose_name="商品id")
     goods_image = models.ImageField(verbose_name="商品图片")
+class Cart(models.Model):#订单详情表
+    goods_name=models.CharField(max_length=32,verbose_name="商品名称")
+    goods_id=models.IntegerField(verbose_name="商品id")
+    goods_price=models.FloatField(verbose_name="商品价格")
+    goods_number=models.IntegerField(verbose_name="商品购买数量")
+    goods_total = models.FloatField(verbose_name="商品总价")
+    goods_store = models.IntegerField(verbose_name="商品商店")
+    user_id=models.IntegerField(verbose_name="用户id")
+    goods_picture = models.ImageField(upload_to="buyer/images",verbose_name="商品图片")
 
 
