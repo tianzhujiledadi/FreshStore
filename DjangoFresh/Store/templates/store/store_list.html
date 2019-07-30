@@ -1,0 +1,41 @@
+{% extends "store/base.html" %}
+{% block label %}
+    <a class="btn btn-warning" href="/store/register_store/"> 添加店铺</a>
+{% endblock %}
+{% block content %}
+    <table class="table">
+        <tr>
+            <th>店铺名称</th>
+            <th>店铺主人</th>
+            <th>店铺描述</th>
+            <th>店铺照片</th>
+            <th>店铺类型</th>
+<th>操作</th>
+        </tr>
+
+    {% for store in page %}{# 将goods_list改为page将显示分页的内容 #}
+        <tr>
+            <td><a href="/store/list_goods/up/?store_id={{ store.id }}">{{ store.store_name }}</a></td>
+            <td>{{ store.store_address }}</td>
+            <td>{{ store.user_id }}</td>
+            <td>{{ store.store_logo }}</td>
+            <td>{{ store.type }}</td>
+           <td>
+               <a class="btn btn-danger" href="#">修改</a>
+               <a class="btn btn-primary" href="#">删除</a>
+               <a class="btn btn-danger" href="/store/choose/?store_id={{ store.id }}">选择</a>
+
+           </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <div  class="dataTables_paginate"  paging_simple_numbers>
+        <ul class="pagination">
+            {% for p in page_range %}
+            <li class="paginate_button page-item">
+                <a class="page-link"  href="?keywords={{ keywords }}&page_num={{ p }}">{{ p }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

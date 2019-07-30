@@ -1,6 +1,6 @@
 {% extends "store/base.html" %}
 {% block label %}
-    <a class="btn btn-warning" href="/store/add_goods"> 添加商品</a>
+    <a class="btn btn-warning" href="/store/add_goods/?store_id={{ store_id }}"> 添加商品</a>
 {% endblock %}
 {% block content %}
     <table class="table">
@@ -35,7 +35,8 @@
         <ul class="pagination">
             {% for p in page_range %}
             <li class="paginate_button page-item">
-                <a class="page-link"  href="?keywords={{ keywords }}&page_num={{ p }}">{{ p }}</a></li>
+                <a class="page-link"  href="?keywords={{ keywords }}&page_num={{ p }}
+                &store_id={{ store_id }}">{{ p }}</a></li>
         {% endfor %}
         </ul>
     </div>

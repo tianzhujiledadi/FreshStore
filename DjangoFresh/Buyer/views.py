@@ -112,16 +112,15 @@ def  place_order(request):
         count=int(request.POST.get("count"))
         goods_id=request.POST.get("goods_id")
         user_id=request.COOKIES.get("user_id")#通过cookie获取
-        goods=Goods.objects.filter(id=goods_id).first()
-        #goods_id_store=
-        store_id=goods.store_id.get(id=3).id#该商品对象对应的
-        #store_id=goods.store_id.id#获取对应店铺的id
-        #store_id=goods.store_id.id#获取商品对应的商店的id
+        goods=Goods.objects.get(id=goods_id)
+        store_id=goods.store_id.id#获取商品对应的商店的id
+        #store_id=15
         order=Order()#订单表
         order.order_id=setOrderId(str(user_id),str(goods_id),str(store_id))#设置订单编号
         order.goods_count=count
         order.order_user=Buyer.objects.get(id=user_id)#获取用户id
         order.order_price=count*goods.goods_price
+        order.order_status=1#设置订单状态为未支付
         order.save()
         order_detail=OrderDetail()#订单详情表
         order_detail.order_id=order
@@ -137,6 +136,7 @@ def  place_order(request):
         return render(request,"buyer/place_order.html",locals())
     else:
         return HttpResponse('666666666666')
+
 def  cart(request):#购物车页面
     print(111111111)
     id = request.GET.get("goods_id")
@@ -177,6 +177,9 @@ def  pay_order(request):
         notify_url='http://127.0.0.1:8000/buyer/pay_result/'
         # notify通知公告,notify通知公告，notify
     )
+    order=Order.objects.get(order_id=order_id)
+    order.order_status=2#将订单状态改为未支付
+    order.save()
     return  HttpResponseRedirect("http://openapi.alipaydev.com/gateway.do?" + order_string)
 def  pay_result(request):
     # qie="http://127.0.0.1:8000/buyer/pay_result/?charset=utf-8&out_trade_no=36966&method=alipay.trade.page.pay.return&total_amount=636363.00&sign=TenqHQz1D2E%2BMP2MGD77p%2BUSbyxJrYp27cFPwlZ9Mm%2FJPHTMTMvJS5%2BIlLsqR82qLVzuvq7TUXaHBzVilfZUtCgmz3wUP1WH%2B%2B1tDsdVwBzwZ0IpM0ngXSwmDqEYPa7UKylXDb6m7bPySro9uahrmK2G3n1Y%2Bvta1Shmrqip%2BzvWH%2FkApeS2jB1DDJ8je1LQsOc0ZMdbtZvbQa%2BtQWdiScUWuXJG5NatuXuYIlCNo2gnznO22wf%2FAWfWsvGUi4Pdt86RomEGJKOCiH8HPoE3ksNJuF299pv3Uv%2FoCjF8hUamND773gZnarQ1Nt1%2Bh25gjLE2cII3eC7Op2oBW0isEg%3D%3D&trade_no=2019072622001451791000025531&auth_app_id=2016093000627799&version=1.0&app_id=2016093000627799&sign_type=RSA2&seller_id=2088102177880794&timestamp=2019-07-26+19%3A23%3A28"

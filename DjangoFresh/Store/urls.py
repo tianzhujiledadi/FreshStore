@@ -30,5 +30,8 @@ urlpatterns = [
     re_path(r"set_goods/(?P<state>\w+)/",set_goods),
     re_path(r"setgoodstype/(?P<state>\w+)/",setGoodType),
     path("goodstype/",goodstype),
-# path("addgoodtype/",addGoodType),
+    path("order_list/",order_list),
+    path("store_list/",store_list),#店铺列表
+    path("choose/",choose),#店铺选择
+    path("orderdeal/",orderdeal),#订单处理
 ]

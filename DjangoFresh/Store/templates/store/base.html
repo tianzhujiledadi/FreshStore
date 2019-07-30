@@ -38,15 +38,19 @@
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
       <!-- Nav Item - Dashboard -->
-      <li class="nav-item">
-        <a class="nav-link" href="/store/register_store/">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
+         <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-cog"></i>
           <span>店铺管理</span>
         </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">店铺管理:</h6>
+              <a class="collapse-item" href="/store/register_store/">增加店铺</a>
+              <a class="collapse-item" href="/store/store_list/">店铺列表</a>
+          </div>
+        </div>
       </li>
-            <div class="sidebar-heading">
-        销售管理
-      </div>
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
@@ -58,8 +62,8 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">商品管理:</h6>
             <a class="collapse-item" href="/store/add_goods/">添加商品</a>
-            <a class="collapse-item" href="/store/list_goods/up/">在售商品列表</a>
-              <a class="collapse-item" href="/store/list_goods/down/">下架商品列表</a>
+            <a class="collapse-item" href="/store/list_goods/up/?store_id={{request.COOKIES.has_store}}">在售商品列表</a>
+              <a class="collapse-item" href="/store/list_goods/down/?store_id={{request.COOKIES.has_store}}">下架商品列表</a>
 
           </div>
         </div>
@@ -85,6 +89,23 @@
       </li>
    {% endif %}
   <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-cog"></i>
+          <span>订单管理</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">订单管理:</h6>
+              <a class="collapse-item" href="/store/order_list/?status=1">未支付订单列表</a>
+              <a class="collapse-item" href="/store/order_list/?status=2">待发货订单列表</a>
+              <a class="collapse-item" href="/store/order_list/?status=3">已发货订单列表</a>
+              <a class="collapse-item" href="/store/order_list/?status=4">已收货订单列表</a>
+              <a class="collapse-item" href="/store/order_list/?status=0">已退货订单列表</a>
+{#              未支付  1；待发货  2；已发货 3； 已收货 4；已退货  0#}
+          </div>
+        </div>
+      </li>
+  <li class="nav-item">
         <a class="nav-link" href="/store/goodstype/">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>商品类型管理</span>
@@ -107,8 +128,12 @@
           <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
             <div class="input-group">
               <input type="text" name="keywords" value="{{ keywords }}"  class="form-control bg-light border-0 small"  placeholder="搜索"  aria-label="Search" aria-describedby="basic-addon2">
-              <div class="input-group-append">
+
+                <div class="input-group-append">
+                    <input type="hidden"  value="{{ store_id }}" name="store_id">
                 <button class="btn btn-primary" type="submit">
+{#                     form表单默认请求方式是get,默认路由是原路由，但参数和原路由带的参数可能不一样，#}
+{#                    form表单提交的参数和form表单中有name的input输入框中=的内容有关#}
                   <i class="fas fa-search fa-sm"></i>
                 </button>
               </div>

@@ -91,8 +91,7 @@ def register_store(request):
             store_type=StoreType.objects.get(id=i)#获取多个数据封装到列表
             store.type.add(store_type) #添加到类型字段，多对多的映射表
         store.save() #保存数据
-        response=HttpResponseRedirect('/store/index/')#在这里重定向首页，进行登录验证，所以
-        # 店铺添加函数不用背登录验证装饰
+        response=HttpResponseRedirect('/store/store_list/')#在这里重定向店铺列表页
         response.set_cookie('has_store',store.id)
         return  response
     return render(request,"store/register_store.html",locals())
@@ -109,8 +108,10 @@ def  add_goods(request):
         goods_safeDate = post_data.get("goods_safeDate")
         goods_type = post_data.get("type")#在前台获取的商品类型
         print(type(goods_type))
-        #goods_store = post_data.get("goods_store")
-        goods_store=request.COOKIES.get("has_store")#在后台过的店铺id
+        goods_store = post_data.get("store_id")
+        print(goods_store,6666666666666666666)
+        #goods_store=request.COOKIES.get("has_store")#在后台过的店铺id
+
         # 保存非多对多数据
         goods = Goods()
         goods.goods_name = goods_name
@@ -121,18 +122,20 @@ def  add_goods(request):
         goods.goods_safeDate = goods_safeDate
         goods.goods_image = goods_image
         goods.goods_type = GoodsType.objects.get(id=int(goods_type))
+        goods.store_id = Store.objects.get(id=int(goods_store))
         #多对一#将goods_type赋值给GoodsType表的id
         goods.save()
         # 保存多对多数据
-        goods.store_id.add(
-            Store.objects.get(id=int(goods_store))
-        )
-        goods.save()
-        return  HttpResponseRedirect('/store/list_goods/up')
+        print("保存成功")
+        #return  HttpResponseRedirect('/store/list_goods/up/?store_id=%s'%goods_store)
+        return HttpResponseRedirect('/store/list_goods/up/?store_id='+goods_store)
         #重定向商品列表，因为商品列表函数获取前端的店铺id所以不用被登录校验装饰
-    return render(request, "store/add_goods.html",locals())
+    store_id = request.GET.get("store_id")
+    print(store_id,99999999999999999999)
+    return render(request, "store/add_goods.html/",locals())
 from django.core.paginator import Paginator
 def  list_goods(request,state):#分页并且查询
+
     """商品的列表页"""
     if state=="down":
         state_num=0
@@ -141,7 +144,9 @@ def  list_goods(request,state):#分页并且查询
     keywords=request.GET.get("keywords","")#查询关键词
     page_num=request.GET.get("page_num",1)#页码
     #查询店铺
-    store_id=request.COOKIES.get("has_store")#获取前端的has_store即id值
+    store_id = request.GET.get("store_id")
+    print(store_id,"store_id")
+    #store_id=request.COOKIES.get("has_store")#获取前端的has_store即id值
     print(store_id)
     store=Store.objects.get(id=int(store_id))#根据id获取对应店铺的对象
     if  keywords:
@@ -268,6 +273,51 @@ def setGoodType(request,state):
         pass
     referer = request.META.get('HTTP_REFERER')#获取请求页来源
     return HttpResponseRedirect(referer)#跳转到请求来源页
+from  Buyer.models import OrderDetail,Order
+def order_list(request):#订单
+    status=request.GET.get("status")
+    store_id=request.COOKIES.get("has_store")#通过cookie获取店铺id
+    order_list=OrderDetail.objects.filter(order_id__order_status=int(status),goods_store=store_id)
+    #获取商品对应的店铺id,获取订单对应的状态
+    return render(request,"store/order_list.html",locals())
+def orderdeal(request):#订单处理
+    id=request.GET.get("id")
+    status=request.GET.get("status")
+    order = Order.objects.get(id=int(id))
+    order.order_status=status
+    order.save()
+
+    return  HttpResponseRedirect("/store/order_list/?status="+status)
+def store_list(request):#店铺列表
+    keywords = request.GET.get("keywords", "")  # 查询关键词
+    page_num = request.GET.get("page_num", 1)  # 页码
+    # 查询用户
+    user_id = request.COOKIES.get("user_id")
+    print(user_id,"user_id")
+    #store = Store.objects.get(id=int(store_id))
+    seller = Seller.objects.get(id=int(user_id))  # 根据id获取对应店铺的对象
+    print(seller,"seller")
+    if keywords:#store店铺表没有外键user_id同过cookie获取用户名
+        #goods_list = store.goods_set.filter(goods_under=state_num, goods_name__contains=keywords)
+        store_list=Store.objects.filter(user_id=int(user_id),store_name__contains=keywords)# 完成了模糊查询
+    else:
+        store_list = Store.objects.filter(user_id=int(user_id))
+    paginator=Paginator(store_list,3)#分页，每页3条数据
+    page_num = int(page_num)
+    page = paginator.page(int(page_num))
+    if len(store_list) / 3 <= page_num - 1:
+        if page_num >= 2:
+            page_num -= 1
+        else:
+            page_num = 1
+    page = paginator.page(int(page_num))
+    page_range = paginator.page_range
+    return render(request, "store/store_list.html", locals())
+def  choose(request):#店铺选择
+    store_id = request.GET.get("store_id")
+    response=HttpResponseRedirect("/store/store_list/?store_id="+store_id)
+    response.set_cookie('has_store', store_id)
+    return response
 
 
 
