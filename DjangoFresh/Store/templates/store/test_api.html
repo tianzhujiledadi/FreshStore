@@ -1,0 +1,86 @@
+{% extends "store/base.html" %}
+{% block label %}
+    <a class="btn btn-warning" href="/store/add_goods/?store_id={{ store_id }}"> 添加商品</a>
+{% endblock %}
+{% block content %}
+ {% verbatim %}
+    <div id="goods">
+    <table class="table"  >
+       <thread class="table-info"> <tr>
+            <th>商品名称</th>
+            <th>商品价格</th>
+            <th>商品数量</th>
+            <th>出厂日期</th>
+            <th>保质期</th>
+            <th>操作</th>
+           </tr>
+       </thread>
+    <tbody>
+    <tr v-for="goods in goods_list">
+            <td><a href="#">{{ goods.goods_name }}</a></td>
+            <td>{{ goods.goods_price }}</td>
+            <td>{{ goods.goods_number }}</td>
+            <td>{{ goods.goods_date}}</td>
+            <td>{{ goods.goods_safeDate}}</td>
+           <td>
+               <a class="btn btn-danger" href="#">上架</a>
+           </td>
+        </tr>
+    </tbody>
+    </table>
+        <ul class="pagination">
+            <li class="paginate_button page-item" v-for="p in page_range">
+                <a class="page-link"  href="#" v-on:click="get_page_data(p)">{{ p }}</a></li>
+        </ul>
+    </div>
+ {% endverbatim %}
+{% endblock %}
+{% block script %}
+    <script  type="text/javascript" src="/static/store/js/modernizr.js"></script>
+<script  type="text/javascript" src="/static/store/js/vue.min.js"></script>
+<script  type="text/javascript" src="/static/store/js/vue-resource.js"></script>
+<script>
+    Vue.use(VueResource); //使用vueresource对象
+        var vue = new Vue({
+                el: "#goods", //指定绑定的范围对象
+                data: {
+                    goods_list: [],
+                    page_range: []
+                }, //具体绑定的数据对象
+                created:function () {
+                    this.$http.get("/APIgoods/").then( //发起ajax get请求
+                        function (data) {
+                            this.goods_list = data.data.results; //将接受的数据绑定到vue对象上
+                            //data.data是一个字典，results对应的值是一个列表封装许多字典
+                            console.log(1,data.data),
+                            console.log(2,data.data.results),
+                            page_number = Math.ceil(data.data.count/10);//页码
+                            console.log(2,page_number);//var之前必须是分号，某些情况也可以没有符号，但绝对不能是逗号
+                            var page_range = [...new Array(page_number).keys()];
+                            this.page_range = page_range //将接受的数据绑定到vue对象上
+                            console.log(4,this.page_range);
+                        }, //如果请求成功执行的函数
+                        function (error) {
+                            console.log(error)
+                        }
+                    )
+                }, //初始化方法
+                methods: {
+                    get_page_data:function (page) {
+                        this.$http.get("/APIgoods/?page="+page).then(
+                        function (data) {
+                            this.goods_list = data.data.results;
+                            page_number = Math.ceil(data.data.count/10);
+                            var page_range = [...new Array(page_number).keys()];
+                            this.page_range = page_range
+                        },
+                        function (error) {
+                            console.log(error)
+                        }
+                    )
+                    } //可以被v-on绑定的方法
+                }
+            }
+        );
+</script>
+{% endblock %}

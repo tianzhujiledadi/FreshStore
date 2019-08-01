@@ -318,6 +318,9 @@ def  choose(request):#店铺选择
     response=HttpResponseRedirect("/store/store_list/?store_id="+store_id)
     response.set_cookie('has_store', store_id)
     return response
+def  test_api(request):
+    return render(request, "store/test_api.html", locals())
+
 
 
 

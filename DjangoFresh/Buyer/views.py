@@ -143,9 +143,21 @@ def  place_order(request):
             return render(request,"buyer/place_order.html",locals())
         return HttpResponse('666666666666')
 from django.http import JsonResponse#json+httpresponse
+from django.core.paginator import Paginator#引入分页模块
 def  cart(request):#购物车页面
     user_id=request.COOKIES.get("user_id")
     goods_list=Cart.objects.filter(user_id=user_id).order_by("-id")
+    page_num = request.GET.get("page_num", 1)  # 默认是第一页
+    paginator = Paginator(goods_list, 3)  # 将获取的所有数据按每页3条数据分页
+    page_num = int(page_num)
+    if len(goods_list) / 3 <= page_num - 1:
+        if page_num >= 2:
+            page_num -= 1
+        else:
+            page_num = 1
+    page = paginator.page(int(page_num))
+    page_range = paginator.page_range  # 获取所有页码
+    return render(request, "buyer/cart.html", locals())
     if request.method=="POST":#cart页提交订单
         post_data=request.POST
         cart_data=[]#收集前端传递过来的商品
@@ -184,7 +196,7 @@ def  cart(request):#购物车页面
             order_detail.save()
         url="/buyer/place_order/?order_id=%s"%order.id
         return HttpResponseRedirect(url)
-    return render(request,"buyer/cart.html",locals())
+
 def  add_cart(request):
     result={"state":"error","data":""}
     if request.method=="POST":
@@ -205,11 +217,10 @@ def  add_cart(request):
         cart.save()
         result["state"]="success"
         result["data"]="商品添加成功"
+        return HttpResponseRedirect("/buyer/cart/")
     else:
         result["data"]="请求错误"
     return JsonResponse(result)
-
-
 
 ##############################################################################################################
 from  alipay import AliPay
@@ -337,6 +348,7 @@ def goodsexit(request):
     #     good.goods_image="buyer/images/banner04.jpg"
     #     good.save()
     return HttpResponseRedirect('/buyer/index/')
+
 
 
 

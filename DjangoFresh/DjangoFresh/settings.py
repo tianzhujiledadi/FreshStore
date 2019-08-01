@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'Buyer',
     'ckeditor',#富文本配置，django自带
     'ckeditor_uploader',
+    'rest_framework',
+    'djcelery',
+    'CeleryTask',
 ]
 
 MIDDLEWARE = [
@@ -83,8 +86,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -116,11 +117,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS=(
     os.path.join(BASE_DIR,"static"),
@@ -128,9 +126,53 @@ STATICFILES_DIRS=(
 MEDIA_URL="/media/"#长传文件
 MEDIA_ROOT=os.path.join(BASE_DIR,"static")
 #STATIC_ROOT=os.path.join(BASE_DIR,"static")#收集静态文件
-
 CKEDITOR_UPLOAD_PATH='static/upload'
 CKEDITOR_IMAGE_BACKEND="pillow"#富文本配置
 #配置完富文本后要收集静态文件，然后在前端引用，然后运行
+REST_FRAMEWORK={
+    "DEFAULT_PERMISSION_CLASSES":[
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':10,#分页需要,用于后端分页
+    "DEFAULT_RENDERER_CLASSES":(
+        'utils.rendererresponse.customrenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS':(
+        'django_filters.rest_framework.DjangoFilterBackend',#django-filter自带查询过滤器
+
+    )
+}
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'#发送邮件采用smtp服务
+EMAIL_USE_TLS=False#使用tls方式
+EMAIL_HOST="smtp.163.com"
+EMAIL_POST=465
+EMAIL_HOST_USER="18232951692@qq.com"
+EMAIL_HOST_PASSWORD="123aoe"
+DEFAUIL_FROM_EMAIL="3303236612@qq.com"
+
+#celery#配置
+import djcelery#导入django-celery模块
+djcelery.setup_loader()#进行模块加载
+BROKER_URL="redis://127.0.0.1:6379/1"#任务容器地址，redis数据库地址
+CELERY_IMPORTS=('CeleryTask.tasks')#具体的任务文件
+CELERY_TIMEZONE='Asia/Shanghai'#celery时区
+CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'#celey处理器，固定
+#celery的定时器
+from  celery.schedules import crontab
+from celery.schedules import timedelta
+CELERYBETA_SCHEDULE={#定时器策略
+    #定时任务一：每隔30s运行一次
+    u'测试定时器1':{
+        "task":"celeryTask.tasks.taskExample",
+        #"schedule"crontab(minute='*/2’),#or 'schedule': timedelta(seconds=3)
+        "schedule":timedelta(seconds=30),#30秒运行一次
+        "args":(),
+    },
+
+}
+
+
+
 
 

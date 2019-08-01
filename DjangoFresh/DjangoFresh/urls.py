@@ -13,9 +13,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path,include,re_path
 from Buyer.views import index
+from rest_framework import routers
+from DjangoFresh.view import TypeViewSet,UserViewSet
+# class UserSerializer(serializers.HyperlinkedModelSerializer):
+#     """声明数据"""
+#     class Meta:#元类
+#         model=Goods#要进行接口序列化的模型
+#         fields=["goods_name","goods_price","goods_number","goods_description"]#序列要返回的字段
+# class UserViewSet(viewsets.ModelViewSet):
+#     queryset = Goods.objects.all()#具体返回的数据
+#     serializer_class = UserSerializer#指定过滤的类
+# class GoodsTypeSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = GoodsType
+#         fields = ["name","description"]
+# class TypeViewSet(viewsets.ModelViewSet):
+#     queryset = GoodsType.objects.all()
+#     serializer_class = GoodsTypeSerializer
+router = routers.DefaultRouter() #声明一个默认的路由注册器
+router.register(r"goods",UserViewSet) #注册写好的接口视图
+router.register(r"goodsType",TypeViewSet) #注册写好的接口视图
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('store/',include('Store.urls')),
@@ -24,3 +45,9 @@ urlpatterns = [
     re_path(r'^$', index),
     #ckeditor类似于一个小APP
 ]
+urlpatterns +=[
+    re_path('^API', include(router.urls)),  # restful的根路由
+    re_path("^api_auth", include("rest_framework.urls"))  # 接口认证
+]
+
+

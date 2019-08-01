@@ -34,4 +34,5 @@ urlpatterns = [
     path("store_list/",store_list),#店铺列表
     path("choose/",choose),#店铺选择
     path("orderdeal/",orderdeal),#订单处理
+    path("test_api/",test_api),
 ]
