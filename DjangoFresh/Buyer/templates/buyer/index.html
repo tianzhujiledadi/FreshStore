@@ -17,7 +17,7 @@
 		<div class="slide fl">
 		<ul class="slide_pics">
             {% for goodslist in goodstypelist  %}
-				<li><img src="/static/{{ goodslist.picture }}" alt="幻灯片"></li>
+				<li><img style="width: 760px;height: 270px" src="/static/{{ goodslist.picture }}" alt="幻灯片"></li>
 			{% endfor %}
 			</ul>
 			<div class="prev"></div>
@@ -52,7 +52,8 @@
 
 				<li>
 					<h4><a href="/buyer/detail/?goods_id={{ goods.id }}&type_id={{ goodstype.id }}">{{ goods.goods_name }}</a></h4>
-					<a href="/buyer/detail/?goods_id={{ goods.id }}&type_id={{ goodstype.id }}"><img src="/static/{{ goods.goods_image }}"></a>
+					<a href="/buyer/detail/?goods_id={{ goods.id }}&type_id={{ goodstype.id }}">
+                        <img  src="/static/{{ goods.goods_image }}"></a>
 					<div class="prize">{{ goods.goods_price }}</div>
 				</li>
                 {% endfor %}
@@ -61,22 +62,4 @@
 	</div>
        {% endfor %}
 {% endblock %}
-{% block script %}
-<script type="text/javascript" src="/static/buyer/js/slideshow.js"></script>
-	<script type="text/javascript">
-		BCSlideshow('focuspic');
-		var oFruit = document.getElementById('fruit_more');
-		var oShownum = document.getElementById('show_count');
 
-		var hasorder = localStorage.getItem('order_finish');
-
-		if(hasorder)
-		{
-			oShownum.innerHTML = '2';
-		}
-
-		oFruit.onclick = function(){
-			window.location.href = 'goods_list.html';
-		}
-	</script>
-{% endblock %}

@@ -1,0 +1,25 @@
+{% load cache %}{# 加载cache #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{{ request.COOKIES.valid }}
+{# cookie存在的值 #}
+{% if request.COOKIES.valid %}
+    {# 如果存在cookie #}
+    <p>有cookie</p>
+    {% else %}
+    <p>没有cookie</p>
+{% endif %}
+{% cache  500  hsqcache %}
+    {# 500缓存声明周期   hsqcache缓存名称 #}
+    <img src="/static/store/images/01.jpg" alt="">
+{% endcache %}
+{#    <img src="/static/store/images/01.jpg" alt="">#}
+{{ store_data }}
+</body>
+</html>
+

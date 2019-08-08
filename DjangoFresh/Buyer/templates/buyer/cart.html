@@ -7,7 +7,7 @@
 {#  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">#}
 {##}
 {#  <!-- Custom styles for this template-->#}
-<link href="/static/store/css/sb-admin-2.min.css" rel="stylesheet">
+
 {% endblock %}
 {% block content %}
 	<div class="total_count">全部商品<em>2</em>件</div>	
@@ -21,7 +21,7 @@
 	</ul>
     <form method="post">
     {% csrf_token %}
-{% for goods in page %}
+{% for goods in goods_list %}
 	<ul class="cart_list_td clearfix">
 		<li class="col01"><input type="checkbox" class="goods_check" checked
         value="{{ goods.id }}"  name="goods_{{ goods.id }}" id="{{ goods.id }}"></li>

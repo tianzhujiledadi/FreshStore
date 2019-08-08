@@ -63,6 +63,7 @@ def login(request):
                     request.session['username']=username
                     return response
     return  render(request,"buyer/login.html",locals())
+@loginValid
 def  logout(request):
     response=HttpResponseRedirect("/buyer/login/")
     for key  in  request.COOKIES:
@@ -96,6 +97,7 @@ def  goods_list(request):
 #     inventory = "库存:%d"%(goods.goods_number)  # 商品库存
 #     priceall = int(goods.goods_price)*count
 #     return render(request, "buyer/detail.html", locals())
+@loginValid
 def detail(request):
     id = request.GET.get("goods_id")
     goods=Goods.objects.filter(id=id).first()
@@ -107,6 +109,7 @@ def setOrderId(user_id,goods_id,store_id):
     时间+用户id+商品id+店铺id"""
     strftime=time.strftime("%Y%m%d%H%M%S",time.localtime())
     return strftime+user_id+goods_id+store_id#拼接字符串
+@loginValid
 def  place_order(request):
     if request.method=="POST":
         #POST数据
@@ -144,48 +147,38 @@ def  place_order(request):
         return HttpResponse('666666666666')
 from django.http import JsonResponse#json+httpresponse
 from django.core.paginator import Paginator#引入分页模块
+@loginValid
 def  cart(request):#购物车页面
     user_id=request.COOKIES.get("user_id")
     goods_list=Cart.objects.filter(user_id=user_id).order_by("-id")
-    page_num = request.GET.get("page_num", 1)  # 默认是第一页
-    paginator = Paginator(goods_list, 3)  # 将获取的所有数据按每页3条数据分页
-    page_num = int(page_num)
-    if len(goods_list) / 3 <= page_num - 1:
-        if page_num >= 2:
-            page_num -= 1
-        else:
-            page_num = 1
-    page = paginator.page(int(page_num))
-    page_range = paginator.page_range  # 获取所有页码
-    return render(request, "buyer/cart.html", locals())
-    if request.method=="POST":#cart页提交订单
-        post_data=request.POST
-        cart_data=[]#收集前端传递过来的商品
-        cart_ids=[]
-        for k,v in post_data.items():
-            if k.startswith("goods_"):#判断传过来的订单id
-                print(v,"v",k,"k")
+    if request.method == "POST":  # cart页提交订单
+        post_data = request.POST
+        cart_data = []  # 收集前端传递过来的商品
+        cart_ids = []
+        for k, v in post_data.items():
+            if k.startswith("goods_"):  # 判断传过来的订单id
+                print(v, "v", k, "k")
                 cart_data.append(Cart.objects.get(id=int(v)))
                 cart_ids.append(int(v))
-        goods_count=sum([int(i.goods_number) for i in cart_data])#提交过来的数据总的数量
-        #goods_total=sum([int(i.goods_total) for i in cart_data])#订单的总价
-        goods_total=Cart.objects.filter(id__in=cart_ids).aggregate(Sum("goods_total"))#得到一个字典
-        goods_total=goods_total["goods_total__sum"]
-        #goods_store=([str(i.goods_store) for i in cart_data])
-        #保存订单
-        order=Order()
-        order.order_id=setOrderId(str(user_id),str(goods_count),"2")
-        #订单中有多个商品或者多个店铺，使用goods_count来代替商品id,使用2代表店铺id
-        order.goods_count=goods_count
-        order.order_user=Buyer.objects.get(id=user_id)
-        order.order_price=goods_total
-        order.order_status=1
+        goods_count = sum([int(i.goods_number) for i in cart_data])  # 提交过来的数据总的数量
+        # goods_total=sum([int(i.goods_total) for i in cart_data])#订单的总价
+        goods_total = Cart.objects.filter(id__in=cart_ids).aggregate(Sum("goods_total"))  # 得到一个字典
+        goods_total = goods_total["goods_total__sum"]
+        # goods_store=([str(i.goods_store) for i in cart_data])
+        # 保存订单
+        order = Order()
+        order.order_id = setOrderId(str(user_id), str(goods_count), "2")
+        # 订单中有多个商品或者多个店铺，使用goods_count来代替商品id,使用2代表店铺id
+        order.goods_count = goods_count
+        order.order_user = Buyer.objects.get(id=user_id)
+        order.order_price = goods_total
+        order.order_status = 1
         order.save()
-        #保存订单详情
-        #这里的detail是购物车里的数据实例，不是商品的实例
+        # 保存订单详情
+        # 这里的detail是购物车里的数据实例，不是商品的实例
         for detail in cart_data:
-            order_detail=OrderDetail()
-            order_detail.order_id=order#order是一条订单数据
+            order_detail = OrderDetail()
+            order_detail.order_id = order  # order是一条订单数据
             order_detail.goods_id = detail.goods_id
             order_detail.goods_name = detail.goods_name
             order_detail.goods_price = detail.goods_price
@@ -194,9 +187,10 @@ def  cart(request):#购物车页面
             order_detail.goods_store = detail.goods_store
             order_detail.goods_image = detail.goods_picture
             order_detail.save()
-        url="/buyer/place_order/?order_id=%s"%order.id
+        url = "/buyer/place_order/?order_id=%s" % order.id
         return HttpResponseRedirect(url)
-
+    return render(request, "buyer/cart.html", locals())
+@loginValid
 def  add_cart(request):
     result={"state":"error","data":""}
     if request.method=="POST":

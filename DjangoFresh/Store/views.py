@@ -10,8 +10,15 @@ def LoginValid(fun):#被包装的函数名和参数都在fun里
         #request,是浏览器返回来的参数，*args将参数打包成元组，**kwargs将关键字参数打包成字典
         username=request.COOKIES.get("username")
         session_user=request.session.get("username")
-        if username  and  session_user and username==session_user:
+        user_id=request.COOKIES.get("user_id")
+        if username  and  session_user and user_id and username==session_user:
             user=Seller.objects.filter(username=username).first()#判断存在该用户
+            store = Store.objects.filter(user_id=user.id).first()  # 在查询店铺是否存在
+            response = HttpResponseRedirect("/store/index/")
+            if store:
+                response.set_cookie('has_store', store.id)
+            else:
+                response.set_cookie('has_store', '')
             if  user:
                 return fun(request,*args,**kwargs)#调用下面被装饰的函数
         return  HttpResponseRedirect("/store/login/")
@@ -59,6 +66,7 @@ def userValid(username):#检验用户名是否存在
     return user
 def base(request):
     return render(request,'store/base.html')
+@LoginValid
 def register_store(request):
     type_list = StoreType.objects.all()
     user_id=request.COOKIES.get("user_id")#获取用户id
@@ -95,6 +103,7 @@ def register_store(request):
         response.set_cookie('has_store',store.id)
         return  response
     return render(request,"store/register_store.html",locals())
+@LoginValid
 def  add_goods(request):
     goodstype_list = GoodsType.objects.all()
     if request.method=="POST":
@@ -134,6 +143,7 @@ def  add_goods(request):
     print(store_id,99999999999999999999)
     return render(request, "store/add_goods.html/",locals())
 from django.core.paginator import Paginator
+@LoginValid
 def  list_goods(request,state):#分页并且查询
 
     """商品的列表页"""
@@ -182,6 +192,7 @@ def  list_goods(request,state):#分页并且查询
 #     page=paginator.page(int(page_num))#获取具体页的数据
 #     page_range=paginator.page_range#获取所有页码
 #     return render(request,"store/goods_list.html",locals())
+@LoginValid
 def  loginout(request):
     print(111111)
     response=HttpResponseRedirect("/store/login/")
@@ -191,9 +202,11 @@ def  loginout(request):
         response.delete_cookie(key)
     del request.session["username"]
     return  response
+@LoginValid
 def  goods(request,goods_id):
     goods_data=Goods.objects.filter(id=goods_id).first()
     return  render(request,"store/goods.html",locals())
+@LoginValid
 def  update_goods(request,goods_id):
     goods_data=Goods.objects.filter(id=goods_id).first()
     if request.method=="POST":
@@ -217,6 +230,7 @@ def  update_goods(request,goods_id):
         goods.save()
         return HttpResponseRedirect("/store/goods/%s"%goods_id)#重定向到对应id的商品详情页
     return  render(request,"store/update_goods.html",locals())
+@LoginValid
 def  set_goods(request,state):
     if  state=="down":
         state_num=0
@@ -233,6 +247,7 @@ def  set_goods(request,state):
             goods.goods_under=state_num#修改状态
             goods.save()#保存
     return HttpResponseRedirect(referer)#跳转到请求来源页
+@LoginValid
 def  goodstype(request):
     page_num=request.GET.get("page_num",1)#默认是第一页
     goodstype_list=GoodsType.objects.order_by("id")#查询goods表中所有数据，并按倒序排序
@@ -249,6 +264,7 @@ def  goodstype(request):
     page = paginator.page(int(page_num))
     page_range=paginator.page_range#获取所有页码
     return render(request,"store/goodstype.html",locals())
+@LoginValid
 def setGoodType(request,state):
     if state=="add"  or state=="exit":
         post_data = request.POST  # 接收post数据
@@ -274,12 +290,14 @@ def setGoodType(request,state):
     referer = request.META.get('HTTP_REFERER')#获取请求页来源
     return HttpResponseRedirect(referer)#跳转到请求来源页
 from  Buyer.models import OrderDetail,Order
+@LoginValid
 def order_list(request):#订单
     status=request.GET.get("status")
     store_id=request.COOKIES.get("has_store")#通过cookie获取店铺id
     order_list=OrderDetail.objects.filter(order_id__order_status=int(status),goods_store=store_id)
     #获取商品对应的店铺id,获取订单对应的状态
     return render(request,"store/order_list.html",locals())
+@LoginValid
 def orderdeal(request):#订单处理
     id=request.GET.get("id")
     status=request.GET.get("status")
@@ -288,6 +306,7 @@ def orderdeal(request):#订单处理
     order.save()
 
     return  HttpResponseRedirect("/store/order_list/?status="+status)
+@LoginValid
 def store_list(request):#店铺列表
     keywords = request.GET.get("keywords", "")  # 查询关键词
     page_num = request.GET.get("page_num", 1)  # 页码
@@ -313,6 +332,7 @@ def store_list(request):#店铺列表
     page = paginator.page(int(page_num))
     page_range = paginator.page_range
     return render(request, "store/store_list.html", locals())
+@LoginValid
 def  choose(request):#店铺选择
     store_id = request.GET.get("store_id")
     response=HttpResponseRedirect("/store/store_list/?store_id="+store_id)
