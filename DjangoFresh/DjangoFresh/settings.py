@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#_*g#)k=c6jjy$cb)2tc&7sz^w)=vj92_-=1j80%=69ezgkrlu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ["*"]#让所有ip访问
 # Application definition
 INSTALLED_APPS = [
@@ -164,7 +164,6 @@ CELERY_IMPORTS=('CeleryTask.tasks')#具体的任务文件
 CELERY_TIMEZONE='Asia/Shanghai'#celery时区
 CELERYBEAT_SCHEDULER='djcelery.schedulers.DatabaseScheduler'#celey处理器，固定
 #celery的定时器
-
 
 #schedules时间表 安排schedules schdeules时间表 安排；celery定时任务用到的包celery celery
 from celery.schedules import timedelta#timedelta时间间隔timedelta  timedelta时间间隔timedelta
