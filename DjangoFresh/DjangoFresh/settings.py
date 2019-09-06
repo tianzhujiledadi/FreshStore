@@ -51,9 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'DjangoFresh.middleware.MiddlewareTest',#middleware中间件
 ]
-
 ROOT_URLCONF = 'DjangoFresh.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

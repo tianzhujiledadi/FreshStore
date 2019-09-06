@@ -1,4 +1,4 @@
-from CeleryTask.tasks import add
+from ..CeleryTask.tasks import add
 from django.http import JsonResponse
 def get_add(request):
     add.delay(2,3)
